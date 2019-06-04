@@ -1,0 +1,74 @@
+import json
+import urllib3
+import telegram
+
+from telegram.ext import Updater
+updater = Updater (token='751274801:AAFCGV4bAA6FQeppj1zxuUhc-xAy8LIdlco')
+dispatcher = updater.dispatcher
+import logging
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+def start(bot, update):
+    bot.send_message(chat_id=update.message.chat_id, text="Olá\n Para a utlização do nosso bot informe o nome do alimento para consultar \n Exemplo: uva")
+    bot.send_message(chat_id=update.message.chat_id, text="As informações de qual alimento deseja consultar?")
+from telegram.ext import CommandHandler
+start_handler = CommandHandler('start',start)
+dispatcher.add_handler(start_handler)
+updater.start_polling()
+
+def echo(bot, update):
+   if ((update.message.text == ('morango'))or(update.message.text == ('Morango'))):
+     bot.send_message(chat_id=update.message.chat_id, text="100g de Morango cru\nCalorias: 30kcal \nCarboidratos: 6,8g\nProteinas: 0,9g \nGorduras totais: 0,3g\nGorduras Saturadas: 0,15g\nFibra alimentar: 1,7g\nSodio: 1 mg")
+   elif ((update.message.text == ('banana'))or(update.message.text == ('Banana'))):
+       bot.send_message(chat_id=update.message.chat_id, text="Calorias: 39,6 kcal \nCarboidratos: 9,12g\nProteinas: 0,52g \nGorduras totais: 0,12g\nGorduras Saturadas: 0g\nFibra alimentar: 0,8g\nSodio: 0 mg")
+   elif ((update.message.text == ('maçã'))or(update.message.text == ('Maçã'))):
+       bot.send_message(chat_id=update.message.chat_id, text="Calorias: 79,5kcal \nCarboidratos: 18,1g\nProteinas: 0,72g \nGorduras totais: 0,16g\nGorduras Saturadas: 0,054g\nFibra alimentar: 0,9g\nSodio: 2 mg")
+   elif ((update.message.text == ('uva'))or(update.message.text == ('Uva'))):
+       bot.send_message(chat_id=update.message.chat_id, text="100g de uva\nCalorias: 69,kcal \nCarboidratos: 22,8g\nProteinas: 0,45g \nGorduras totais: 0g\nGorduras Saturadas: 0g\nFibra alimentar: 1,95g\nSodio: 0 mg")
+   elif ((update.message.text == ('laranja'))or(update.message.text == ('Laranja'))):
+       bot.send_message(chat_id=update.message.chat_id, text="Laranja\nCalorias: 82,8kcal \nCarboidratos: 20,7g\nProteinas: 1,98g \nGorduras totais: 0,18g\nGorduras Saturadas: 0g\nFibra alimentar: 3,24g\nSodio: 1,8 mg")
+   elif ((update.message.text == ('frango'))or(update.message.text == ('Frango'))):
+       bot.send_message(chat_id=update.message.chat_id, text="100g de Peito de frango\nCalorias: 163kcal \nCarboidratos: 0g\nProteinas: 31,5g \nGorduras totais: 3,2g\nGorduras Saturadas: 1,1g\nFibra alimentar: 0g\nSodio: 36 mg")
+   elif ((update.message.text == ('pão'))or(update.message.text == ('Pão'))):
+       bot.send_message(chat_id=update.message.chat_id, text="Pão 1 unidade\nCalorias: 150kcal \nCarboidratos: 29,3g\nProteinas: 4g \nGorduras totais: 1,55g\nGorduras Saturadas: 0,5g\nFibra alimentar: 1,15g\nSodio: 324 mg")
+   else:
+       bot.send_message(chat_id=update.message.chat_id, text=update.message.text)
+       
+from telegram.ext import MessageHandler, Filters
+echo_handler = MessageHandler(Filters.text, echo)
+dispatcher.add_handler(echo_handler)
+def caps(bot, update, args):
+ text_caps = ''.join(args).upper()
+ bot.send_message(chat_id=update.message.chat_id, text=text_caps)
+ caps_handler = CommandHandler('caps', caps, pass_args=True)
+ dispatcher.add_handler(caps_handler)
+
+def caps(bot, update, args):
+    text_caps = ' '.join(args).upper()
+    bot.send_message(chat_id=update.message.chat_id, text=text_caps)
+caps_handler = CommandHandler('caps', caps, pass_args=True)
+dispatcher.add_handler(caps_handler)
+
+from telegram import InlineQueryResultArticle, InputTextMessageContent
+def inline_caps(bot, update):
+     query = update.inline_query.query
+     if not query:
+        return
+     results = list()
+     results.append(
+        InlineQueryResultArticle(
+            id=query.upper(),
+            title='Caps',
+            input_message_content=InputTextMessageContent(query.upper())
+         )
+     )
+     bot.answer_inline_query(update.inline_query.id, results)
+
+from telegram.ext import InlineQueryHandler
+inline_caps_handler = InlineQueryHandler(inline_caps)
+dispatcher.add_handler(inline_caps_handler)
+
+def unknown(bot, update):
+     bot.send_message(chat_id=update.message.chat_id, text="Desculpe, este comando não existe.")
+
+unknown_handler = MessageHandler(Filters.command, unknown)
+dispatcher.add_handler(unknown_handler)
